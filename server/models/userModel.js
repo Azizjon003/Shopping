@@ -1,3 +1,5 @@
+const hashPassword = require("../utility/hashpass");
+const validator = require("validator");
 const User = (sequelize, DataTypes) => {
   const User = sequelize.define("users", {
     id: {
@@ -5,8 +7,24 @@ const User = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    first_name: { type: DataTypes.STRING, allowNull: false },
-    last_name: { type: DataTypes.STRING, allowNull: false },
+    first_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        min: 5,
+        max: 20,
+      },
+    },
+    last_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        min: 5,
+        max: 20,
+      },
+    },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -16,14 +34,56 @@ const User = (sequelize, DataTypes) => {
         len: [3, 20],
       },
     },
-    email: { type: DataTypes.STRING, allowNull: false },
-    phone: { type: DataTypes.STRING, allowNull: false },
-    password: { type: DataTypes.STRING, allowNull: false },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isEmail: true,
+      },
+      lowercase: true,
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: [10, 15],
+      },
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        min: 8,
+        max: 20,
+        strongPass(value) {
+          if (!validator.isStrongPassword(value)) {
+            throw new Error("Password is not strong enough");
+          }
+        },
+      },
+    },
+    passwordConfirm: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+        passConfirm(value) {
+          if (value !== this.password) {
+            throw new Error("Password and passwordConfirm are not the same");
+          }
+        },
+      },
+    },
     role: {
       type: DataTypes.ENUM,
       defaultValue: "user",
       values: ["admin", "user", "moderator"],
     },
+  });
+  User.beforeCreate(async (user, options) => {
+    const password = await hashPassword(user.password);
+    user.password = password;
+    user.passwordConfirm = null;
   });
   return User;
 };
