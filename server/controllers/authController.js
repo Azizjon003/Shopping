@@ -30,6 +30,18 @@ const passStrongly = (pass) => {
 
   return true;
 };
+const tekshir = (email, username, phone) => {
+  if (!validator.isEmail(email)) {
+    return false;
+  }
+  if (!validator.isAlphanumeric(username)) {
+    return false;
+  }
+  if (!validator.isMobilePhone(phone)) {
+    return false;
+  }
+  return true;
+};
 const User = db.users;
 const signUp = catchAsync(async (req, res, next) => {
   const {
@@ -41,7 +53,6 @@ const signUp = catchAsync(async (req, res, next) => {
     password,
     passwordConfirm,
   } = req.body;
-
   const user = await User.create({
     first_name,
     last_name,
@@ -269,6 +280,37 @@ const role = (roles) => {
     next();
   });
 };
+const updateMe = catchAsync(async (req, res, next) => {
+  const userReq = req.user;
+  const { phone, email, username } = req.body;
+  const user = await User.findOne({
+    where: {
+      id: userReq.id,
+    },
+  });
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+  phone = phone || user.phone;
+  email = email || user.email;
+  username = username || user.username;
+  const shart = tekshir(phone, email, username);
+  if (!shart) {
+    return next(new AppError("Phone, email, username is required", 400));
+  }
+  const updatedUser = await User.update(
+    {
+      phone,
+      email,
+      username,
+    },
+    {
+      where: {
+        id: userReq.id,
+      },
+    }
+  );
+});
 const logout = catchAsync(async (req, res, next) => {
   res.cookie("jwt", "logout", {
     expires: new Date(Date.now() + 10 * 1000),
@@ -287,4 +329,5 @@ module.exports = {
   resetPassword,
   role,
   logout,
+  updateMe,
 };

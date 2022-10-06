@@ -37,6 +37,7 @@ const User = (sequelize, DataTypes) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
       validate: {
         isEmail: true,
       },
@@ -47,6 +48,11 @@ const User = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         len: [10, 15],
+        validatePhone: (value) => {
+          if (!validator.isMobilePhone(value)) {
+            throw new Error("Phone number is not valid");
+          }
+        },
       },
     },
     password: {
@@ -91,6 +97,14 @@ const User = (sequelize, DataTypes) => {
     expiresToken: {
       type: DataTypes.DATE,
       allowNull: true,
+    },
+    emailActiv: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    phoneActiv: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   });
   User.beforeCreate(async (user, options) => {
