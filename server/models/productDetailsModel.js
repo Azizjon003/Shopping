@@ -5,8 +5,24 @@ const ProductDetails = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        min: 3,
+        max: 250,
+      },
+    },
+    price: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
     colors: { type: DataTypes.ENUM, values: ["white", "black", "green"] },
-    sizes: { type: DataTypes.ENUM, values: ["xl", "2xl", "3xl"] },
     condition: { type: DataTypes.STRING, allowNull: false },
     images: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false },
   });

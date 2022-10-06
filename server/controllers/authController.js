@@ -75,15 +75,14 @@ const signUp = catchAsync(async (req, res, next) => {
 });
 
 const login = catchAsync(async (req, res, next) => {
-  const { email, password, username } = req.body;
-  if (!email || !username || !password) {
+  const { email, password, username, phone } = req.body;
+  if ((!email && !username && !phone) || !password) {
     return next(new AppError("Please provide email and password", 400));
   }
   const user = await User.findOne({
     attributes: ["id", "email", "password", "username", "role"],
     where: {
-      email,
-      username,
+      [db.Op.or]: [{ email }, { username }, { phone }],
     },
   });
   if (!user) {

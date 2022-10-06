@@ -14,6 +14,10 @@ const Categories = (sequelize, DataTypes) => {
         max: 20,
       },
     },
+    photo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   });
   return Categories;
 };
