@@ -80,12 +80,15 @@ db.users.belongsTo(db.locations, { onDelete: "CASCADE" });
 
 db.vacancyCategories.hasOne(db.vacancies, { onDelete: "CASCADE" });
 db.vacancies.belongsTo(db.vacancyCategories, { onDelete: "CASCADE" });
-db.sequelize
-  .sync({ alter: true, force: true })
-  .then(() => {
-    console.log(cli.blue("Database & tables created!"));
-  })
-  .catch((err) => {
-    console.log(cli.red(err.message));
-  });
+
+db.categories.hasMany(db.categoryLittles);
+db.categoryLittles.belongsTo(db.categories);
+// db.sequelize
+//   .sync({ alter: true, force: true })
+//   .then(() => {
+//     console.log(cli.blue("Database & tables created!"));
+//   })
+//   .catch((err) => {
+//     console.log(cli.red(err.message));
+//   });
 module.exports = db;

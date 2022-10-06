@@ -12,9 +12,13 @@ const userRouter = require("../routes/userRouter");
 const vacancyCategories = require("../routes/vacancyCategoryRouter");
 const submitVacancy = require("../routes/submitVacancyRouter");
 const review = require("../routes/reviewRouter");
+const categoryRouter = require("../routes/categoryRouter");
+const littleCategory = require("../routes/littleCategory");
 
 const auth = require("../routes/authRouter");
 app.use("/", auth);
+app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/littleCategory", littleCategory);
 app.use("/api/v1/vacancy", vacancyRouter);
 app.use("/api/v1/locations", locationRouter);
 app.use("/api/v1/users", userRouter);
