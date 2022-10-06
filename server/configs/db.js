@@ -9,10 +9,10 @@ const sequelize = new Sequelize(
 sequelize
   .authenticate()
   .then(() => {
-    console.log("Postgresql connected succesfully");
+    console.log(cli.blue("Postgresql connected succesfully"));
   })
   .catch((err) => {
-    console.log(err.message);
+    console.log(cli.red(err.message));
   });
 
 let db = {};

@@ -79,6 +79,22 @@ const User = (sequelize, DataTypes) => {
       defaultValue: "user",
       values: ["admin", "user", "moderator"],
     },
+    activ: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    hashToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+        min: 32,
+        max: 34,
+      },
+    },
+    expiresToken: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   });
   User.beforeCreate(async (user, options) => {
     const password = await hashPassword(user.password);
