@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize, DataTypes, Op } = require("sequelize");
 const cli = require("cli-color");
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -17,6 +17,7 @@ sequelize
 
 let db = {};
 db.sequelize = sequelize;
+db.Op = Op;
 db.basket = require("../models/basketsModel")(sequelize, DataTypes);
 db.brands = require("../models/brandsModel")(sequelize, DataTypes);
 db.categories = require("../models/categoriesModel")(sequelize, DataTypes);

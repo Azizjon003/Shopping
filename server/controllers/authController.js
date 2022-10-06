@@ -1,17 +1,17 @@
+const db = require("../configs/db");
 const cli = require("cli-color");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const AppError = require("../utility/appError");
 const bcrypt = require("bcryptjs");
 const catchAsync = require("../utility/catchAsync");
-const db = require("../configs/db");
 const Email = require("../utility/email");
-
+const validator = require("validator");
 const JwtSecret = process.env.JWT_SECRET;
-const resetFunc = async (token) => {
+const resetFunc = (token) => {
   const url = "http://localhost/resetpassword/";
   const expiresToken = new Date().getTime() + 15 * 60 * 1000;
-  const hashToken = await crypto
+  const hashToken = crypto
     .createHash("sha256")
     .digest("base64")
     .toString("hex");
@@ -22,6 +22,13 @@ const resetFunc = async (token) => {
     hashToken,
     expiresToken,
   };
+};
+const passStrongly = (pass) => {
+  if (!validator.isStrongPassword(pass)) {
+    return false;
+  }
+
+  return true;
 };
 const User = db.users;
 const signUp = catchAsync(async (req, res, next) => {
@@ -95,7 +102,14 @@ const updatePassword = catchAsync(async (req, res, next) => {
   }
   //email bilan tekshirdim shu kishi bor yo'qligini
   const user = await User.findOne({
-    attributes: ["id", "email", "password", "username", "role"],
+    attributes: [
+      "id",
+      "email",
+      "password",
+      "username",
+      "role",
+      "passwordConfirm",
+    ],
     where: {
       email,
     },
@@ -111,7 +125,12 @@ const updatePassword = catchAsync(async (req, res, next) => {
   if (password !== passwordConfirm) {
     return next(new AppError("Password and password confirm not match", 401));
   }
+  if (!passStrongly(password)) {
+    return next(new AppError("Password is not strong", 401));
+  }
+
   const newPass = await bcrypt.hash(password, 12);
+
   const updatedUser = await User.update(
     {
       password: newPass,
@@ -122,9 +141,11 @@ const updatePassword = catchAsync(async (req, res, next) => {
       },
     }
   );
+
   if (!updatedUser) {
     return next(new AppError("Password not updated", 400));
   }
+
   res.status(200).json({
     status: "success",
     token: "",
@@ -168,14 +189,14 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     return next(new AppError("User not found", 404));
   }
   const resetToken = crypto.randomBytes(32).toString("hex");
-  const data = await resetFunc(resetToken);
+  const data = resetFunc(resetToken);
   const mail = new Email(user, data.mainUrl);
 
   await mail.sendMessage();
 
   const updatedUser = await User.update(
     {
-      passwordResetToken: data.hashToken,
+      hashToken: data.hashToken,
       expiresToken: data.expiresToken,
     },
     {
@@ -194,8 +215,69 @@ const forgotPassword = catchAsync(async (req, res, next) => {
 });
 const resetPassword = catchAsync(async (req, res, next) => {
   const token = req.params.token;
+  const hashToken = resetFunc(token).hashToken;
+  console.log(cli.red(hashToken));
+  const user = await User.findOne({
+    where: {
+      hashToken,
+      expiresToken: {
+        [db.Op.gt]: new Date().getTime(),
+      },
+    },
+  });
+  console.log(user);
+  if (!user) {
+    return next(new AppError("Token is not valid", 400));
+  }
+  const { password, passwordConfirm } = req.body;
+  if (!password || !passwordConfirm) {
+    return next(new AppError("Password and password confirm is required", 400));
+  }
+
+  if (password !== passwordConfirm) {
+    return next(new AppError("Password and password confirm not match", 400));
+  }
+  if (!passStrongly(password)) {
+    return next(new AppError("Password is not strong", 400));
+  }
+  const newPass = await bcrypt.hash(password, 12);
+  const updatedUser = await User.update(
+    {
+      password: newPass,
+      hashToken: null,
+      expiresToken: null,
+    },
+    {
+      where: {
+        id: user.id,
+      },
+    }
+  );
+  if (!updatedUser) {
+    return next(new AppError("Password not updated", 400));
+  }
+  res.status(200).json({
+    message: "Password is updated",
+  });
 });
 
+const role = (roles) => {
+  return catchUser(async (req, res, next) => {
+    if (!role.include(req.user.role)) {
+      return next(new AppError("Sizning lavozimingiz to'g'ri kelmaydi", 401));
+    }
+    next();
+  });
+};
+const logout = catchAsync(async (req, res, next) => {
+  res.cookie("jwt", "logout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    status: "success",
+  });
+});
 module.exports = {
   signUp,
   login,
@@ -203,4 +285,6 @@ module.exports = {
   protect,
   forgotPassword,
   resetPassword,
+  role,
+  logout,
 };

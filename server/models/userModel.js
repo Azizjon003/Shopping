@@ -86,10 +86,7 @@ const User = (sequelize, DataTypes) => {
     hashToken: {
       type: DataTypes.STRING,
       allowNull: true,
-      validate: {
-        min: 32,
-        max: 34,
-      },
+      validate: {},
     },
     expiresToken: {
       type: DataTypes.DATE,
