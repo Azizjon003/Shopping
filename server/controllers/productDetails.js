@@ -6,7 +6,14 @@ const cli = require("cli-color");
 const Details = db.productDetails;
 
 const getAll = catchAsync(async (req, res) => {
-  const details = await Details.findAll({}); // required:true
+  const details = await Details.findAll({
+    include: [
+      {
+        model: db.products,
+        as: "product",
+      },
+    ],
+  }); // required:true
   res.status(200).json({
     data: details,
     status: "succes",

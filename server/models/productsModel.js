@@ -1,3 +1,5 @@
+const { UUID } = require("sequelize");
+
 const Products = (sequelize, DataTypes) => {
   const Products = sequelize.define("products", {
     id: {
@@ -14,7 +16,7 @@ const Products = (sequelize, DataTypes) => {
       },
     },
     image_main: { type: DataTypes.STRING, allowNull: false },
-    sale_id: {
+    saleId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
@@ -22,7 +24,7 @@ const Products = (sequelize, DataTypes) => {
         key: "id",
       },
     }, //boshqa table
-    reviews_id: {
+    rewiesId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
@@ -30,7 +32,7 @@ const Products = (sequelize, DataTypes) => {
         key: "id",
       },
     }, //boshqa table
-    detail_id: {
+    productDetailId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -54,11 +56,15 @@ const Products = (sequelize, DataTypes) => {
         key: "id",
       },
     },
-    viewsId: {
+    views: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+    },
+    brandId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: "views",
+        model: "brands",
         key: "id",
       },
     },

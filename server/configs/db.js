@@ -103,23 +103,28 @@ db.vacancies.belongsTo(db.vacancyCategories, { onDelete: "CASCADE" });
 
 db.categories.hasMany(db.categoryLittles);
 db.categoryLittles.belongsTo(db.categories);
-db.categories.hasMany(db.products);
-db.categoryLittles.hasMany(db.products);
+// db.categories.hasMany(db.products);
+// db.categoryLittles.hasMany(db.products);
 
 //
 
+// db.productDetails.hasOne(db.products);
+// db.reviews.belongsTo(db.products);
 //
-db.products.hasOne(db.productDetails);
-db.products.hasOne(db.sales);
-db.products.hasMany(db.reviews);
-// db.products.hasOne(db.views);
-db.reviews.belongsTo(db.products);
-
-db.products.hasOne(db.likes);
-db.users.hasMany(db.likes);
-
+db.products.belongsTo(db.productDetails);
+// db.productDetails.belongsTo(db.products);
+// db.productDetails.belongsTo(db.products);s
+// db.products.hasOne(db.sales);
+// db.products.hasMany(db.reviews);
+db.products.belongsTo(db.brands);
+// db.brands.hasMany(db.products);
+db.products.belongsTo(db.categories);
+db.products.belongsTo(db.categoryLittles);
+// db.products.belongsTo(db.likes);
+// db.users.hasMany(db.likes);
+// force: true, alter: true
 // db.sequelize
-//   .sync({ alter: true, force: true })
+//   .sync({ force: true, alter: true })
 //   .then(() => {
 //     console.log(cli.blue("Database & tables created!"));
 //   })
