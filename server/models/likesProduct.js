@@ -1,6 +1,3 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../configs/db");
-
 const likes = (sequelize, DataTypes) => {
   const likes = sequelize.define("likes", {
     id: {
@@ -16,4 +13,7 @@ const likes = (sequelize, DataTypes) => {
       },
     },
   });
+  return likes;
 };
+
+module.exports = likes;

@@ -59,10 +59,11 @@ db.categoryLittles = require("../models/categoryLittleModel")(
   sequelize,
   DataTypes
 );
-db.views = require("../models/views")(sequelize, DataTypes);
+// db.views = require("../models/views")(sequelize, DataTypes);
 
 db.products = require("../models/productsModel")(sequelize, DataTypes);
 
+db.likes = require("../models/likesProduct")(sequelize, DataTypes);
 //
 
 // users bilan commentlar  qo'shilishi
@@ -111,9 +112,11 @@ db.categoryLittles.hasMany(db.products);
 db.products.hasOne(db.productDetails);
 db.products.hasOne(db.sales);
 db.products.hasMany(db.reviews);
-db.products.hasOne(db.views);
+// db.products.hasOne(db.views);
 db.reviews.belongsTo(db.products);
 
+db.products.hasOne(db.likes);
+db.users.hasMany(db.likes);
 
 // db.sequelize
 //   .sync({ alter: true, force: true })

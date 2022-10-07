@@ -14,6 +14,10 @@ const Brands = (sequelize, DataTypes) => {
         max: 20,
       },
     },
+    photo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   });
   return Brands;
 };

@@ -14,9 +14,10 @@ const submitVacancy = require("../routes/submitVacancyRouter");
 const review = require("../routes/reviewRouter");
 const categoryRouter = require("../routes/categoryRouter");
 const littleCategory = require("../routes/littleCategory");
-
+const brandsModel = require("../routes/brandRoutes");
 const auth = require("../routes/authRouter");
 app.use("/", auth);
+app.use("/api/v1/brands", brandsModel);
 app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/littleCategory", littleCategory);
 app.use("/api/v1/vacancy", vacancyRouter);
