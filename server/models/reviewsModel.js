@@ -5,8 +5,15 @@ const Reviews = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    body: { type: DataTypes.STRING, allowNull: false },
-    rating: { type: DataTypes.INTEGER, allowNull: false },
+    body: { type: DataTypes.TEXT, allowNull: false },
+    rating: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 0,
+        max: 5,
+      },
+    },
   });
 
   return Reviews;

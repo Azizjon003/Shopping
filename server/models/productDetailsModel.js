@@ -22,7 +22,7 @@ const ProductDetails = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    colors: { type: DataTypes.ENUM, values: ["white", "black", "green"] },
+    colors: { type: DataTypes.ENUM, values: ["white", "black", "gray"] },
     condition: { type: DataTypes.STRING, allowNull: false },
     images: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false },
   });

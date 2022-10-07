@@ -62,27 +62,59 @@ db.categoryLittles = require("../models/categoryLittleModel")(
 db.views = require("../models/views")(sequelize, DataTypes);
 
 db.products = require("../models/productsModel")(sequelize, DataTypes);
+
+//
+
 // users bilan commentlar  qo'shilishi
 db.users.hasOne(db.reviews, { onDelete: "CASCADE" });
 db.reviews.belongsTo(db.users, { onDelete: "CASCADE" });
 // users bilan commentlar qo'shilishi
+
+//
 
 // userlarning elonlari qo'shilishi
 db.users.hasOne(db.submitVacancies, { onDelete: "CASCADE" });
 db.submitVacancies.belongsTo(db.users, { onDelete: "CASCADE" });
 // userlarning  elonlari qo'shilishi
 
+//
+
 db.vacancies.hasOne(db.submitVacancies, { onDelete: "CASCADE" });
 db.submitVacancies.belongsTo(db.vacancies, { onDelete: "CASCADE" });
+
+//
+
+//
 
 db.locations.hasOne(db.users, { onDelete: "CASCADE" });
 db.users.belongsTo(db.locations, { onDelete: "CASCADE" });
 
+//
+
+//
+
 db.vacancyCategories.hasOne(db.vacancies, { onDelete: "CASCADE" });
 db.vacancies.belongsTo(db.vacancyCategories, { onDelete: "CASCADE" });
 
+//
+
+//
+
 db.categories.hasMany(db.categoryLittles);
 db.categoryLittles.belongsTo(db.categories);
+db.categories.hasMany(db.products);
+db.categoryLittles.hasMany(db.products);
+
+//
+
+//
+db.products.hasOne(db.productDetails);
+db.products.hasOne(db.sales);
+db.products.hasMany(db.reviews);
+db.products.hasOne(db.views);
+db.reviews.belongsTo(db.products);
+
+
 // db.sequelize
 //   .sync({ alter: true, force: true })
 //   .then(() => {
@@ -91,4 +123,5 @@ db.categoryLittles.belongsTo(db.categories);
 //   .catch((err) => {
 //     console.log(cli.red(err.message));
 //   });
+
 module.exports = db;
